@@ -1,6 +1,4 @@
 // Import necessary modules
-const express = require('express');
-
 const {Thought,Users}=require("../models");
 
 
@@ -36,10 +34,10 @@ try{
       const thought = await Thought.create(req.body);
 
       const user = await Users.findByIdAndUpdate(
-        req.body.userId,
-        { $addToSet: { thoughts: thought._id } },
-        { runValidators: true, new: true }
-      );
+      req.body.userId,
+      { $addToSet: { thoughts: thought._id } },
+      { runValidators: true, new: true }
+    );
 
       return res.status(200).json({ thought, user });
     } catch (err) {
@@ -86,16 +84,16 @@ async  updateThought(req, res) {
     // Add a new reaction to a thought
     async createReaction(req, res) {
         try {
-            const new_reaction = await Thought.findOneAndUpdate(
+            const thought = await Thought.findByIdAndUpdate(
                { _id:req.params.thoughtId},
                 { $addToSet: { reactions: req.body } },
                 {runValidators:true},
                 { new: true }
             );
-             if (!new_reaction) {
+             if (!thought) {
         return res.status(404).json({ message: "No thought with that ID" });
       }
-            res.json(new_reaction);
+            res.json(thought);
         } catch (err) {
             res.status(400).json({err:"error bad request",details:err.message});
         }

@@ -2,7 +2,7 @@
 const express = require('express');
 const { ObjectId } = require('mongoose').Types;
 const router = express.Router();
-const {Users}=require("../models");
+const {Users,Thought}=require("../models");
   
 
 module.exports={
@@ -68,12 +68,14 @@ async  updateUser(req,res){
 // DELETE to remove user by its _id
 async  deleteUser(req,res){
 try{
-const deleteUser = await Users.findAndRemove({ _id: req.params.userId });
+const deleteUser = await Users.findOneAndDelete({ _id: req.params.userId });
 // Remove a user's associated thoughts when deleted
    if (!deleteUser) {
         return res.status(404).json({ message: "No user with that ID" });
-      }
-    await Thought.deleteMany({ _id: { $in: user.thoughts } });
+  }
+  if(deleteUser.thoughts!=null){
+  await Thought.deleteMany({ _id: { $in: deleteUser.thoughts } });
+  }
     return res.status(200).json({
         message: "User and associated thoughts and reactions deleted!",
       });
