@@ -15,17 +15,24 @@ const userSchema= new Schema({
     match:/^\S+@\S+\.\S+$/, // Regex for email: non-whitespace, '@', non-whitespace, '.', non-whitespace
 
   },
-  thoughts:{
-    type:Schema.Types.ObjectId,
-    ref:"Thought"
-  },
-  friends:{
-    type:Schema.Types.ObjectId,
-    ref:"User"
-  }//virtual friendCount should have a function to calculate the length of FRiend array
+  thoughts: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Thought",
+      },
+    ],
+    friends: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Users",
+      },
+    ],
 
 
-
+},
+ {
+  toJSON: { virtuals: true }, // virtuals are included in toJSON
+  toObject: { virtuals: true }, //  in toObject as well
 });
 
 userSchema.virtual("friendCount").get(function(){

@@ -1,5 +1,6 @@
 // Import necessary modules
 const express = require('express');
+const { ObjectId } = require('mongoose').Types;
 const router = express.Router();
 const {Users}=require("../models");
   
@@ -11,10 +12,12 @@ module.exports={
             const users= await Users.find()
              .populate({ path: "thoughts", select: "-__v" })
              .populate({ path: "friends", select: "-__v" });
+             console.log(users)
             res.status(200).json(users);
-        }catch(err){
-             res.status(500).json({ error: 'Internal Server Error' });
-        }
+        }catch(err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal Server Error', details: err.message });
+}
     },
     // GET a single user by its _id and populated thought and friend data
   async getSingleUser(req, res) {
@@ -58,14 +61,14 @@ async  updateUser(req,res){
       }
    res.status(200).json(user)
   }catch(err){
-    res.status(400).json("Bad request")
+    res.status(400).json({error:"Bad request",details:err.message})
 
     }
 },
 // DELETE to remove user by its _id
 async  deleteUser(req,res){
 try{
-const deleteUser = await Users.findByIdAndRemove({ _id: req.params.userId });
+const deleteUser = await Users.findAndRemove({ _id: req.params.userId });
 // Remove a user's associated thoughts when deleted
    if (!deleteUser) {
         return res.status(404).json({ message: "No user with that ID" });
@@ -103,7 +106,7 @@ res.status(400).json("Bad request")
 //  remove a friend from a user's friend list
 async removeFriend(req,res){
     try{
-        const remove= await Users.findByIdAndRemove(
+        const remove= await Users.findByIdAndUpdate(
             {_id:req.params.userId},
             {$pull:{friends:req.params.friendId}},
              { runValidators: true, new: true });

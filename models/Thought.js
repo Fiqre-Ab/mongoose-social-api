@@ -8,14 +8,10 @@ thoughtText: {
     minlength: 1,
     maxlength: 280
   },
- createAt:{
-    type:Date,
-    default:Date.now,
-    get:(timestamp)=>{
-        return timestamp.toLocaleString();
+ createdAt: {
+      type: Date,
+      default: Date.now,
     },
-
- },
  userName:{
     type:String,
     require:true

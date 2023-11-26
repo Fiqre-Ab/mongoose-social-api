@@ -18,14 +18,10 @@ const reactionsSchema=new Schema({
         require:true,
 
     },
-    createAt:{
-        type:Date,
-        default:Date.now,
-        get:(timestamp)=>{
-            return timestamp.toLocalSTring();
-        },
-
-    },
+    createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 },
 {
     toJSON:{getters:true},

@@ -1,25 +1,26 @@
 // Import necessary modules
 const express = require('express');
-const router = express.Router();
-const { Thought } = require('../models/Thought'); 
-const{Users}=require("../models/Users")
-const reactionsSchema = require('../models/Reaction');
+
+const {Thought,Users}=require("../models");
+
 
 module.exports={
     // GET all thought
     async getAllThought(req,res){
         try{
-            const thought= await Thought.find()
-            res.json(thought);
-        }catch(err){
-             res.status(500).json({ error: 'Internal Server Error' });
-        }
+            const thoughts= await Thought.find()
+              console.log(thoughts); // Check the retrieved data
+            res.status(200).json(thoughts);
+        }catch(err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal Server Error', details: err.message });
+}
     },
     // GET a single thought by its _id 
   async  getSingleThought(req, res) {
 try{
-    const single_thought=  await  Thought.findOne({ _id: req.params.userId })
-        if(!thought_user){
+    const single_thought=  await  Thought.findOne({ _id: req.params.thoughtId })
+        if(!single_thought){
             console.error("No thought found with that id")
         }
         else{
@@ -85,18 +86,18 @@ async  updateThought(req, res) {
     // Add a new reaction to a thought
     async createReaction(req, res) {
         try {
-            const new_reaction = await Thought.findByIdAndUpdate(
+            const new_reaction = await Thought.findOneAndUpdate(
                { _id:req.params.thoughtId},
                 { $addToSet: { reactions: req.body } },
                 {runValidators:true},
                 { new: true }
             );
-             if (!reaction) {
+             if (!new_reaction) {
         return res.status(404).json({ message: "No thought with that ID" });
       }
             res.json(new_reaction);
         } catch (err) {
-            res.status(400).json("error bad request");
+            res.status(400).json({err:"error bad request",details:err.message});
         }
     },
 
